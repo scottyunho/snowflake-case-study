@@ -1,29 +1,14 @@
-/**************************************
- * 
- * franchise.js
- * 
- * This file contains the endpoints that
- * should be built out with parsing the 
- * parameters and sending bound SQL queries
- * using the connection
- * 
- **************************************/
 const express = require("express");
 const router = express.Router();
-
 const connection = require('../connect')
 const auth = require('../auth')
 const utils = require('../utils')
 var sql_queries = require('../sql')
 
 router.get('/:franchise/countries/', auth.validateAccess, (req, res) => {
-    // 4.3.2 Parse parameters and connect to Snowflake a return query response
-
     const franchise = req.params.franchise
     const startdate = utils.parseDate(req.query.start) ?? utils.defaultStartDate();
     const enddate = utils.parseDate(req.query.end) ?? utils.defaultEndDate();
-
-    console.log('start: ' + startdate + ', end: ' + enddate);
 
     connection.execute({
         sqlText: sql_queries.top_10_countries,
@@ -41,13 +26,10 @@ router.get('/:franchise/countries/', auth.validateAccess, (req, res) => {
 });
 
 router.get('/:franchise/trucks/:truckbrandname/sales_topitems', auth.validateAccess, (req, res) => {
-    // 4.3.3 Parse parameters and connect to Snowflake a return query response
     const franchise = req.params.franchise;
     const truckbrandname = req.params.truckbrandname;
     const startdate = utils.parseDate(req.query.start) ?? utils.defaultStartDate();
     const enddate = utils.parseDate(req.query.end) ?? utils.defaultEndDate();
-
-    console.log('start: ' + startdate + ', end: ' + enddate);
 
     connection.execute({
         sqlText: sql_queries.top_selling_items_by_truck,
@@ -64,14 +46,11 @@ router.get('/:franchise/trucks/:truckbrandname/sales_topitems', auth.validateAcc
 });
 
 
-
 // Additional routes
 router.get('/:franchise/trucks/', auth.validateAccess, (req, res) => {
     const franchise = req.params.franchise;
     const startdate = utils.parseDate(req.query.start) ?? utils.defaultStartDate();
     const enddate = utils.parseDate(req.query.end) ?? utils.defaultEndDate();
-
-    console.log('start: ' + startdate + ', end: ' + enddate);
 
     connection.execute({
         sqlText: sql_queries.top_10_trucks,
@@ -111,8 +90,6 @@ router.get('/:franchise/trucks/:truckbrandname/sales_dayofweek', auth.validateAc
     const startdate = utils.parseDate(req.query.start) ?? utils.defaultStartDate();
     const enddate = utils.parseDate(req.query.end) ?? utils.defaultEndDate();
 
-    console.log('start: ' + startdate + ', end: ' + enddate);
-
     connection.execute({
         sqlText: sql_queries.sales_by_day_of_week,
         binds: [franchise, startdate, enddate, truckbrandname],
@@ -133,8 +110,6 @@ router.get('/:franchise/trucks/:truckbrandname/sales_topitems_dayofweek', auth.v
     const startdate = utils.parseDate(req.query.start) ?? utils.defaultStartDate();
     const enddate = utils.parseDate(req.query.end) ?? utils.defaultEndDate();
 
-    console.log('start: ' + startdate + ', end: ' + enddate);
-
     connection.execute({
         sqlText: sql_queries.top_selling_items_by_day_of_week,
         binds: [franchise, startdate, enddate, truckbrandname],
@@ -154,8 +129,6 @@ router.get('/:franchise/trucks/:truckbrandname/locations', auth.validateAccess, 
     const truckbrandname = req.params.truckbrandname;
     const startdate = utils.parseDate(req.query.start) ?? utils.defaultStartDate();
     const enddate = utils.parseDate(req.query.end) ?? utils.defaultEndDate();
-
-    console.log('start: ' + startdate + ', end: ' + enddate);
 
     connection.execute({
         sqlText: sql_queries.best_cities_by_day_ofweek,
