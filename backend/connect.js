@@ -18,7 +18,7 @@ const options = {
     account: process.env.ACCOUNT,
     username: process.env.USERNAME,
     authenticator: "SNOWFLAKE_JWT",
-    privateKeyPath: "../../app_user_rsa_key.p8",
+    privateKeyPath: "../app_user_rsa_key.p8",
     database: process.env.DATABASE,
     schema: process.env.SCHEMA,
     warehouse: process.env.WAREHOUSE,

@@ -48,7 +48,20 @@ module.exports = {
     // SQL used by route /:franchise/trucks/:truckbrandname/sales_topitems
     // 4.3.5 Update SQL for Top selling items by truck
     top_selling_items_by_truck: `
-    TBD
+    SELECT
+        TOP 10 menu_item_name,
+        sum(quantity) AS items_sold
+    FROM
+        app.orders
+    WHERE
+        franchise_id = :1
+        AND date(order_ts) >= :2
+        AND date(order_ts) <= :3
+        AND truck_brand_name = :4
+    GROUP BY
+        menu_item_name
+    ORDER BY
+        sum(quantity) desc;
     `,
     
 

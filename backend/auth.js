@@ -33,6 +33,15 @@ module.exports = {
         const authHeader = req.headers["authorization"]
         if (authHeader == null) {
             // 4.6.2 Allow for development mode bypass of token validation
+            environment = process.env.NODE_ENV
+            if('development'==environment){
+                if (process.env.DEV_AUTH_USER){
+                    console.warn('Development mode: no auth header found, accepting user "' + process.env.DEV_AUTH_USER + '" from environment variables with franchise ' + process.env.DEV_AUTH_FRANCHISE)
+                    req.user = {user:process.env.DEV_AUTH_USER, franchise:process.env.DEV_AUTH_FRANCHISE}
+                    next()
+                    return
+                }
+            }
             res.status(400).send("Auth header not present")
             return
         }
@@ -45,7 +54,7 @@ module.exports = {
             }
             else {
                 req.user = user
-                next()            
+                next()
             }
         });
     },

@@ -30,11 +30,16 @@ const app = express();
 dotenv.config()
 
 // 4.5.1 add CORS to the app
+cors_origin = process.env.CORS_ADDRESS ?? 'http://localhost:3001'
+app.use(cors({
+    origin: [cors_origin]
+}));
 
-// Start the server
-const port = 3000
-app.listen(port, () => {
-    console.log("Server running on port " + port);
+port = process.env.PORT ?? 3000
+app.listen(port, () => {    
+    console.log('Server running on port ' + port);
+    console.log('Environment: ' + app.get('env'))
+    console.log('CORS origin allowed: ' + cors_origin)
 });
 
 // Add additional middleware (json response output, request logging )
@@ -42,8 +47,13 @@ app.use(express.json())
 app.use(utils.logRequest);
 
 // 4.4.2 Add helpers for authenetication and tokens
+var auth = require('./auth')
+
 // 4.4.3 Add routes for login
+app.use("/", login);
+
 // 4.4.4 Add validation of tokens to each route
+app.use(auth.validateToken);
 
 // Definition of first route
 app.get("/", (req, res, next) => {
@@ -68,3 +78,5 @@ const franchise = require('./routes/franchise.js')
 app.use("/franchise", franchise);
 
 // 4.3.6 Add remaining franchise routes
+//const franchise_all = require('./routes/franchise_all.js')
+//app.use("/franchise", franchise_all);

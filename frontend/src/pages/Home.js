@@ -34,8 +34,12 @@ function Home() {
     let [countriesA, setCountriesA] = useState([]);
     let countriesArr = [];
     // Insert top10Countries variable for Lab 6 Section 6.3 (6.3.1)
-    // Insert top10Trucks and trucks variables for Lab 6 Section 6.3 (6.3.5)
+    let [top10Countries, setTop10Countries] = useState([]);
 
+    // Insert top10Trucks and trucks variables for Lab 6 Section 6.3 (6.3.5)
+    let [top10Trucks, setTop10Trucks] = useState([]); //used to hold Sales of the Top 10 Trucks
+    let [trucks, setTrucks] = useState([]); // used to hold unique Trucks brands.
+    
     const lineColors = ["#8884d8", "#f0d490", "#9e2866", "#1140e8", "#97d29e", "#4f011e", "#295fb1", "#48cb71", "#6ce146", "#ebb118", "#b015ea", "#e4604e", "#86368d", "#7ea178", "#718992", "#dd2cbd", "#8349c2", "#8a2574"];
 
     function logout() {
@@ -44,12 +48,34 @@ function Home() {
 
     // Add your code here for Lab 6, section 6.3 (6.3.2)
     function fetchTop10Countries() {
-        
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + location.state.accessToken },
+        };
+        fetch(backendURL+'/franchise/'+franchise+'/countries?start='+fromDate+'&end='+toDate, requestOptions)
+            .then((result) => result.json())
+                .then((data) => {
+                    setTop10Countries(data)
+        })    
     }
 
     // Add your code here for Lab 6, section 6.3 (6.3.6)
     function fetchTop10Trucks() {
-        
+        const requestOptions = {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + location.state.accessToken },
+        };
+        fetch(backendURL+'/franchise/'+franchise+'/trucks?start='+fromDate+'&end='+toDate, requestOptions)
+            .then((result) => result.json())
+                .then((data) => {
+                    setTop10Trucks(data)
+                    let t = [];
+    
+                    for (let i=0; i<data.length; i++) {
+                        t.push(data[i].TRUCK_BRAND_NAME);
+                    }
+                    setTrucks(t);
+                })        
     }
 
     function fetchYTDRevenue() {
@@ -105,7 +131,9 @@ function Home() {
 
         fetchYTDRevenue();
         // Add fetchTop10Countries function reference for Lab 6, section 6.3 (6.3.3)
+        fetchTop10Countries();
         // Add fetchTop10Trucks function reference for Lab 6, section 6.3 (6.3.7)
+        fetchTop10Trucks();
         // eslint-disable-next-line react-hooks/exhaustive-deps -- Do not delete this line.
     }, [])
 
@@ -188,7 +216,25 @@ function Home() {
                         Top 10 Countries
                     </div>
                     <div className='homecol'>
-                        {/* Add your code here for Lab 6, section 6.3 (6.3.4) */}
+                        {
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                layout='vertical'
+                                width={700}
+                                height={0}
+                                data={top10Countries}
+                                margin={{top: 15, right: 15, left: 25, bottom: 5,}}>
+                                <XAxis type="number" dataKey="REVENUE" tickFormatter={tickFormater}>
+                                </XAxis>                            
+                                <YAxis type="category" dataKey="COUNTRY">
+                                </YAxis>
+                                <Tooltip formatter={(value) => 'US$'+(new Intl.NumberFormat('en').format(value))} />
+                                <Bar dataKey="REVENUE" fill="#548bf2">
+                                    <LabelList dataKey="REVENUE" position="insideRight" fill='white' formatter={labelFormatter} />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                        }
                     </div>
                 </div>
                 <div className='row1col'>
@@ -196,7 +242,23 @@ function Home() {
                         Top 10 Trucks
                     </div>
                     <div className='homecol'>
-                        {/* Add your code here for Lab 6, section 6.3 (6.3.8) */}
+                        {
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                layout='horizontal'
+                                width={700}
+                                height={0}
+                                data={top10Trucks}
+                                margin={{top: 15, right: 15, left: 25, bottom: 5,}}>
+                                <XAxis type="category" dataKey="TRUCK_BRAND_NAME" />
+                                <YAxis type="number" dataKey="REVENUE"  tickFormatter={tickFormater} />                       
+                                <Tooltip formatter={(value) => 'US$'+(new Intl.NumberFormat('en').format(value))} />
+                                <Bar dataKey="REVENUE" fill="#548bf2">
+                                    <LabelList dataKey="REVENUE" position="top" fill='grey' formatter={labelFormatter} />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                        }
                     </div>
                 </div>
             </div>

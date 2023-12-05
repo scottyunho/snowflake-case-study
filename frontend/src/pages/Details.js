@@ -28,7 +28,10 @@ function Details() {
     let [locationsArr, setLocationsArr] = useState([]);
 
     // Insert topItemsByTruck variable for Lab 5 Section 6.4 (6.4.1)
+    let [topItemsByTruck, setTopItemsByTruck] = useState([]);
+
     // Insert salesByDOW variable for Lab 5 Section 6.4 (6.4.5)
+    let [salesByDOW, setSalesByDOW] = useState([]);
 
 
     const barColors = ["#8884d8", "#f0d490", "#9e2866", "#1140e8", "#97d29e", "#4f011e", "#295fb1", "#48cb71", "#6ce146", "#ebb118", "#b015ea", "#e4604e", "#86368d", "#7ea178", "#718992", "#dd2cbd", "#8349c2", "#8a2574"];
@@ -57,8 +60,17 @@ function Details() {
 
     // Add your code here for Lab 5, section 6.4 (6.4.2)
     function fetchTopItemsByTruck() {
-        
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + location.state.accessToken },
+        };
+        fetch(backendURL+'/franchise/'+franchise+'/trucks/'+truck+'/sales_topitems?start='+fromDate+'&end='+toDate, requestOptions)
+            .then((result) => result.json())
+                .then((data) => {
+                    setTopItemsByTruck(data)
+        })
     }
+
 
     function createSelectItems() {
         const trucks = location.state.trucks;
@@ -72,9 +84,17 @@ function Details() {
 
     // Add your code here for Lab 5, section 6.4 (6.4.6)
     function fetchSalesByDOW() {
-
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + location.state.accessToken },
+        };
+        fetch(backendURL+'/franchise/'+franchise+'/trucks/'+truck+'/sales_dayofweek?start='+fromDate+'&end='+toDate, requestOptions)
+            .then((result) => result.json())
+                .then((data) => {
+                    setSalesByDOW(data)
+        })
     }
-
+    
     function dayofWeek(dow) {
         if (dow === 0) {
             return "Sunday";
@@ -201,7 +221,9 @@ function Details() {
     // eslint-disable-next-line
     useEffect(() => {
         // Add fetchTopItemsByTruck function reference for Lab 5, section 6.4 (6.4.3)
+        fetchTopItemsByTruck();
         // Add fetchSalesByDOW function reference for Lab 5, section 6.4 (6.4.7)
+        fetchSalesByDOW();
         fetchItemsByDOW();
         fetchBestTruckLocations();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -257,7 +279,24 @@ function Details() {
                         Best Items by <b><i>{truckName}</i></b>
                     </div>
                     <div className='detailscol'>
-                        {/* Add your code here for Lab 5, section 6.4 (6.4.4) */}
+                        {
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                width={700}
+                                height={0}
+                                data={topItemsByTruck}
+                                margin={{top: 15, right: 15, left: 25, bottom: 5,}}>
+                                <XAxis type="category" dataKey="MENU_ITEM_NAME">
+                                </XAxis>
+                                <YAxis type="number" dataKey="REVENUE" tickFormatter={tickFormater}>
+                                </YAxis>
+                                <Tooltip formatter={(value) => 'US$'+(new Intl.NumberFormat('en').format(value))} />
+                                <Bar dataKey="REVENUE" fill="#548bf2">
+                                    <LabelList dataKey="REVENUE" position="top" fill='grey' formatter={labelFormatter} />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                        }
                     </div>
                 </div>
                 <div className='row1col'>
@@ -265,7 +304,25 @@ function Details() {
                         <b><i>{truckName}</i></b> Sales by Day of Week
                     </div>
                     <div className='homecol'>
-                        {/* Add your code here for Lab 5, section 6.4 (6.4.8) */}
+                        {
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                                width={500}
+                                height={400}
+                                data={salesByDOW}
+                                margin={{
+                                    top: 10,
+                                    right: 30,
+                                    left: 0,
+                                    bottom: 0,
+                                }}>
+                                <XAxis dataKey="DOW" tickFormatter={dayofWeek} />
+                                <YAxis tickFormatter={tickFormater} />
+                                <Tooltip formatter={(value) => 'US$'+(new Intl.NumberFormat('en').format(value))} />
+                                <Area type="monotone" dataKey="REVENUE" stroke="#548bf2" fill="#548bf2" activeDot={{ r: 8 }} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                        }
                     </div>
                 </div>
             </div>
