@@ -145,7 +145,7 @@ function Home() {
 
     // Add your code here for Lab 6, section 6.3 (6.3.9)
     function gotoDetails() {
-        
+        navigate('/details', {state: {franchise: franchise, truck_brand_name: top10Trucks[0]['TRUCK_BRAND_NAME'], fromDate: fromDate, toDate:toDate, trucks: trucks, accessToken: location.state.accessToken, refreshToken: location.state.refreshToken}});
     }
 
     const tickFormater = (number) => {
